@@ -109,6 +109,7 @@ Rectangle {
                 color: "#181b22"; radius: 14; border.color: "#282d37"
 
                 Column {
+                    id: leftCol
                     anchors.fill: parent; anchors.margins: 16; spacing: 10
 
                     Text { text: "Учебные группы"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
@@ -152,7 +153,9 @@ Rectangle {
                     }
 
                     Rectangle {
-                        width: parent.width; height: parent.height * 0.30
+                        id: groupsBox
+                        width: parent.width
+                        height: Math.max(90, (leftCol.height - 265) * 0.42)
                         color: "#111318"; radius: 10; border.color: "#222630"
 
                         ListView {
@@ -284,7 +287,8 @@ Rectangle {
                     }
 
                     Rectangle {
-                        width: parent.width; height: parent.height - 375
+                        width: parent.width
+                        height: Math.max(90, leftCol.height - groupsBox.height - 265)
                         color: "#111318"; radius: 10; border.color: "#222630"
 
                         ListView {
@@ -500,12 +504,14 @@ Rectangle {
                 color: "#181b22"; radius: 14; border.color: "#282d37"
 
                 Column {
+                    id: rightCol
                     anchors.fill: parent; anchors.margins: 16; spacing: 10
 
                     Text { text: "Преподаватели"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Rectangle {
-                        width: parent.width; height: parent.height * 0.34
+                        id: teachersBox
+                        width: parent.width; height: (rightCol.height - 86) * 0.38
                         color: "#111318"; radius: 10; border.color: "#222630"
 
                         ListView {
@@ -561,7 +567,7 @@ Rectangle {
 
                     Rectangle {
                         width: parent.width
-                        height: parent.height - (parent.height * 0.34) - 96
+                        height: rightCol.height - teachersBox.height - 86
                         color: "#111318"; radius: 10; border.color: "#222630"
 
                         ListView {
