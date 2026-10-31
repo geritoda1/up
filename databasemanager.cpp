@@ -29,34 +29,32 @@ void DatabaseManager::initDatabase() {
     m_db.setDatabaseName(dbPath);
 
     if (!m_db.open()) {
-        qDebug() << "Ошибка БД:" << m_db.lastError().text();
         return;
     }
 
     QSqlQuery query;
-    // 1. Таблица групп
     query.exec("CREATE TABLE IF NOT EXISTS groups ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "name TEXT NOT NULL UNIQUE)");
 
-    // 2. Таблица пользователей (декан, преподаватели, студенты)
     query.exec("CREATE TABLE IF NOT EXISTS users ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "login TEXT NOT NULL UNIQUE, "
                "password TEXT NOT NULL, "
                "role TEXT NOT NULL, "
                "full_name TEXT NOT NULL, "
+               "phone TEXT, "
                "group_id INTEGER, "
                "FOREIGN KEY(group_id) REFERENCES groups(id))");
 
-    // 3. Таблица дисциплин
+    query.exec("ALTER TABLE users ADD COLUMN phone TEXT");
+
     query.exec("CREATE TABLE IF NOT EXISTS subjects ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "title TEXT NOT NULL, "
                "teacher_id INTEGER, "
                "FOREIGN KEY(teacher_id) REFERENCES users(id))");
 
-    // 4. Таблица журнала посещаемости и успеваемости
     query.exec("CREATE TABLE IF NOT EXISTS journal ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "student_id INTEGER NOT NULL, "
@@ -67,11 +65,10 @@ void DatabaseManager::initDatabase() {
                "FOREIGN KEY(student_id) REFERENCES users(id), "
                "FOREIGN KEY(subject_id) REFERENCES subjects(id))");
 
-    // Гарантируем наличие аккаунта декана для первого запуска
     query.exec("SELECT COUNT(*) FROM users WHERE role = 'dean'");
     if (query.next() && query.value(0).toInt() == 0) {
-        query.exec("INSERT INTO users (login, password, role, full_name, group_id) "
-                   "VALUES ('dean', '123', 'dean', 'Деканат (Администратор)', NULL)");
+        query.exec("INSERT INTO users (login, password, role, full_name, phone, group_id) "
+                   "VALUES ('dean', '123', 'dean', 'Деканат (Администратор)', '', NULL)");
     }
 }
 
@@ -79,11 +76,11 @@ void DatabaseManager::refreshAll() {
     m_groupsModel->setQuery("SELECT name, id FROM groups ORDER BY name ASC");
 
     m_teachersModel->setQuery(
-        "SELECT full_name, id, login FROM users WHERE role = 'teacher' ORDER BY full_name ASC"
+        "SELECT full_name, id, login, COALESCE(phone, '') AS phone FROM users WHERE role = 'teacher' ORDER BY full_name ASC"
         );
 
     m_studentsModel->setQuery(
-        "SELECT u.full_name, u.id, u.login, COALESCE(g.name, 'Без группы') AS group_name, u.group_id "
+        "SELECT u.full_name, u.id, u.login, COALESCE(u.phone, '') AS phone, COALESCE(g.name, 'Без группы') AS group_name, u.group_id "
         "FROM users u LEFT JOIN groups g ON u.group_id = g.id "
         "WHERE u.role = 'student' ORDER BY u.full_name ASC"
         );
@@ -136,17 +133,18 @@ void DatabaseManager::deleteGroup(int groupId) {
     refreshAll();
 }
 
-bool DatabaseManager::addUser(const QString &login, const QString &password, const QString &role, const QString &fullName, int groupId) {
-    if (login.trimmed().isEmpty() || password.trimmed().isEmpty() || fullName.trimmed().isEmpty())
+bool DatabaseManager::addUser(const QString &login, const QString &password, const QString &role, const QString &fullName, const QString &phone, int groupId) {
+    if (login.trimmed().isEmpty() || password.trimmed().isEmpty() || fullName.trimmed().isEmpty() || phone.trimmed().isEmpty())
         return false;
 
     QSqlQuery q;
-    q.prepare("INSERT INTO users (login, password, role, full_name, group_id) "
-              "VALUES (:login, :password, :role, :full_name, :group_id)");
+    q.prepare("INSERT INTO users (login, password, role, full_name, phone, group_id) "
+              "VALUES (:login, :password, :role, :full_name, :phone, :group_id)");
     q.bindValue(":login", login.trimmed());
     q.bindValue(":password", password.trimmed());
     q.bindValue(":role", role);
     q.bindValue(":full_name", fullName.trimmed());
+    q.bindValue(":phone", phone.trimmed());
     if (role == "student" && groupId > 0)
         q.bindValue(":group_id", groupId);
     else
@@ -200,7 +198,6 @@ void DatabaseManager::loadTeacherData(int teacherId) {
     m_currentTeacherId = teacherId;
     m_currentStudentId = -1;
 
-    // Если у преподавателя есть свои предметы — показываем их, иначе все предметы
     QSqlQuery checkQuery;
     checkQuery.prepare("SELECT COUNT(*) FROM subjects WHERE teacher_id = :tid");
     checkQuery.bindValue(":tid", teacherId);
@@ -285,17 +282,15 @@ void DatabaseManager::loadStudentData(int studentId) {
                                         "ORDER BY j.id DESC"
                                         ).arg(studentId));
 
-    // Считаем средний балл
     QSqlQuery qAvg;
     qAvg.prepare("SELECT AVG(CAST(grade AS REAL)) FROM journal WHERE student_id = :sid AND grade IN ('2','3','4','5')");
     qAvg.bindValue(":sid", studentId);
     if (qAvg.exec() && qAvg.next() && !qAvg.value(0).isNull()) {
         m_studentAvgGrade = QString::number(qAvg.value(0).toDouble(), 'f', 2);
     } else {
-        m_studentAvgGrade = "Нет оценок";
+        m_studentAvgGrade = "0.00";
     }
 
-    // Считаем процент посещаемости
     QSqlQuery qAtt;
     qAtt.prepare("SELECT COUNT(*), SUM(CASE WHEN attendance = 'Присутствовал' THEN 1 ELSE 0 END) "
                  "FROM journal WHERE student_id = :sid");
@@ -304,9 +299,9 @@ void DatabaseManager::loadStudentData(int studentId) {
         int total = qAtt.value(0).toInt();
         int present = qAtt.value(1).toInt();
         int percent = (present * 100) / total;
-        m_studentAttendancePercent = QString::number(percent) + "% (" + QString::number(present) + " из " + QString::number(total) + ")";
+        m_studentAttendancePercent = QString::number(percent) + "%";
     } else {
-        m_studentAttendancePercent = "100% (0 занятий)";
+        m_studentAttendancePercent = "0%";
     }
 
     emit statsChanged();

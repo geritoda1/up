@@ -225,7 +225,7 @@ Rectangle {
                                         boundDate = model.lesson_date;
                                         boundGrade = model.grade;
                                         boundAttendance = model.attendance;
-                                        dateField.text = model.lesson_date;
+                                        dateInput.text = model.lesson_date;
                                         gradeField.text = model.grade;
                                         var attIdx = attendanceCombo.find(model.attendance);
                                         if (attIdx !== -1) attendanceCombo.currentIndex = attIdx;
@@ -339,13 +339,24 @@ Rectangle {
                                 width: parent.width
                                 spacing: 6
 
-                                TextField {
-                                    id: dateField
+                                Rectangle {
                                     width: parent.width - 42; height: 38
-                                    text: boundDate; placeholderText: "дд.мм.гггг"
-                                    color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
-                                    leftPadding: 10; rightPadding: 10; selectByMouse: true
-                                    background: Rectangle { color: "#111318"; radius: 8; border.color: dateField.activeFocus ? "#3b82f6" : "#282d37" }
+                                    color: "#111318"; radius: 8
+                                    border.color: dateInput.activeFocus ? "#3b82f6" : "#282d37"
+                                    border.width: dateInput.activeFocus ? 1.5 : 1
+
+                                    TextInput {
+                                        id: dateInput
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 10
+                                        anchors.rightMargin: 10
+                                        verticalAlignment: TextInput.AlignVCenter
+                                        color: "#f8fafc"
+                                        font.pixelSize: 13
+                                        inputMask: "00.00.0000"
+                                        text: boundDate
+                                        selectByMouse: true
+                                    }
                                 }
 
                                 Button {
@@ -454,7 +465,7 @@ Rectangle {
                         onClicked: {
                             var sid = dbManager.getStudentIdByIndex(studentCombo.currentIndex);
                             var subid = dbManager.getSubjectIdByIndex(subjectCombo.currentIndex);
-                            dbManager.addJournalRecord(sid, subid, dateField.text, attendanceCombo.currentText, gradeField.text);
+                            dbManager.addJournalRecord(sid, subid, dateInput.text, attendanceCombo.currentText, gradeField.text);
                         }
                     }
 
@@ -474,7 +485,7 @@ Rectangle {
                             horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                         }
                         onClicked: {
-                            dbManager.updateJournalRecord(selectedRecordId, dateField.text, attendanceCombo.currentText, gradeField.text);
+                            dbManager.updateJournalRecord(selectedRecordId, dateInput.text, attendanceCombo.currentText, gradeField.text);
                         }
                     }
 
@@ -616,7 +627,7 @@ Rectangle {
                     id: dayRect
                     radius: 6
                     property string formattedDay: Qt.formatDate(model.date, "dd.MM.yyyy")
-                    property bool isSelectedDate: dateField.text === formattedDay
+                    property bool isSelectedDate: dateInput.text === formattedDay
                     color: isSelectedDate ? "#2563eb" : (dayMouse.containsMouse ? "#1e293b" : "transparent")
                     opacity: model.month === monthGrid.month ? 1.0 : 0.3
 
@@ -636,7 +647,7 @@ Rectangle {
                         onClicked: {
                             var d = Qt.formatDate(model.date, "dd.MM.yyyy");
                             root.boundDate = d;
-                            dateField.text = d;
+                            dateInput.text = d;
                             calPopup.close();
                         }
                     }

@@ -29,7 +29,7 @@ Rectangle {
     Rectangle {
         id: card
         width: 400
-        height: mainColumn.implicitHeight + 56
+        height: mainColumn.implicitHeight + 52
         anchors.centerIn: parent
         color: "#181b22"
         radius: 16
@@ -42,9 +42,9 @@ Rectangle {
 
         Column {
             id: mainColumn
-            width: parent.width - 56
+            width: parent.width - 52
             anchors.centerIn: parent
-            spacing: 14
+            spacing: 12
 
             Column {
                 width: parent.width
@@ -129,7 +129,7 @@ Rectangle {
 
             Column {
                 width: parent.width
-                spacing: 5
+                spacing: 4
                 visible: isRegisterMode
 
                 Text {
@@ -142,7 +142,7 @@ Rectangle {
                 TextField {
                     id: fullNameField
                     width: parent.width
-                    height: 42
+                    height: 40
                     placeholderText: "Иванов Иван Иванович"
                     color: "#f8fafc"
                     placeholderTextColor: "#64748b"
@@ -161,7 +161,52 @@ Rectangle {
 
             Column {
                 width: parent.width
-                spacing: 5
+                spacing: 4
+                visible: isRegisterMode
+
+                Text {
+                    text: "Номер телефона"
+                    color: "#cbd5e1"
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+
+                // Кастомный контейнер с маской ввода для телефона
+                Rectangle {
+                    width: parent.width
+                    height: 40
+                    color: "#111318"
+                    radius: 8
+                    border.color: phoneInput.activeFocus ? "#3b82f6" : "#282d37"
+                    border.width: phoneInput.activeFocus ? 1.5 : 1
+
+                    TextInput {
+                        id: phoneInput
+                        anchors.fill: parent
+                        anchors.leftMargin: 14
+                        anchors.rightMargin: 14
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: "#f8fafc"
+                        font.pixelSize: 14
+                        inputMask: "+7 (999) 000-00-00"
+                        selectByMouse: true
+                    }
+
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: 14
+                        verticalAlignment: Text.AlignVCenter
+                        text: "+7 (___) ___-__-__"
+                        color: "#64748b"
+                        font.pixelSize: 14
+                        visible: phoneInput.text.length <= 4
+                    }
+                }
+            }
+
+            Column {
+                width: parent.width
+                spacing: 4
 
                 Text {
                     text: "Логин"
@@ -173,7 +218,7 @@ Rectangle {
                 TextField {
                     id: loginField
                     width: parent.width
-                    height: 42
+                    height: 40
                     placeholderText: "Введите логин"
                     color: "#f8fafc"
                     placeholderTextColor: "#64748b"
@@ -193,7 +238,7 @@ Rectangle {
 
             Column {
                 width: parent.width
-                spacing: 5
+                spacing: 4
 
                 Text {
                     text: "Пароль"
@@ -205,7 +250,7 @@ Rectangle {
                 TextField {
                     id: passField
                     width: parent.width
-                    height: 42
+                    height: 40
                     placeholderText: "Введите пароль"
                     echoMode: TextInput.Password
                     color: "#f8fafc"
@@ -226,7 +271,7 @@ Rectangle {
 
             Column {
                 width: parent.width
-                spacing: 5
+                spacing: 4
                 visible: isRegisterMode
 
                 Text {
@@ -239,7 +284,7 @@ Rectangle {
                 ComboBox {
                     id: roleCombo
                     width: parent.width
-                    height: 42
+                    height: 40
                     model: ["Студент", "Преподаватель"]
 
                     background: Rectangle {
@@ -306,7 +351,7 @@ Rectangle {
 
             Column {
                 width: parent.width
-                spacing: 5
+                spacing: 4
                 visible: isRegisterMode && roleCombo.currentIndex === 0
 
                 Text {
@@ -319,7 +364,7 @@ Rectangle {
                 ComboBox {
                     id: regGroupCombo
                     width: parent.width
-                    height: 42
+                    height: 40
                     model: dbManager.groupsModel
                     textRole: "name"
 
@@ -413,7 +458,7 @@ Rectangle {
             Button {
                 id: submitBtn
                 width: parent.width
-                height: 44
+                height: 42
                 hoverEnabled: true
                 text: isRegisterMode ? "Зарегистрироваться" : "Войти"
 
@@ -448,11 +493,12 @@ Rectangle {
             var roleCode = roleCombo.currentIndex === 0 ? "student" : "teacher";
             var gid = (roleCode === "student" && regGroupCombo.count > 0)
                       ? dbManager.getGroupIdByIndex(regGroupCombo.currentIndex) : -1;
-            var res = authManager.registerAccount(loginField.text, passField.text, roleCode, fullNameField.text, gid);
+            var res = authManager.registerAccount(loginField.text, passField.text, roleCode, fullNameField.text, phoneInput.text, gid);
             if (res === "OK") {
                 dbManager.refreshAll();
                 isRegisterMode = false;
                 fullNameField.text = "";
+                phoneInput.text = "";
                 passField.text = "";
                 statusBanner.isSuccess = true;
                 statusText.text = "Аккаунт создан";

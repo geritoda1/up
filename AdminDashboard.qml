@@ -346,17 +346,17 @@ Rectangle {
                 color: "#181b22"; radius: 14; border.color: "#282d37"
 
                 Column {
-                    anchors.fill: parent; anchors.margins: 16; spacing: 12
+                    anchors.fill: parent; anchors.margins: 16; spacing: 9
 
                     Text { text: "Новый пользователь"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Column {
-                        width: parent.width; spacing: 5
+                        width: parent.width; spacing: 4
                         Text { text: "Роль"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: userRoleCombo
-                            width: parent.width; height: 40
+                            width: parent.width; height: 38
                             model: ["Студент", "Преподаватель"]
                             background: Rectangle { color: "#111318"; radius: 8; border.color: userRoleCombo.popup.visible ? "#3b82f6" : "#282d37" }
                             contentItem: Text { text: userRoleCombo.currentText; color: "#f8fafc"; font.pixelSize: 13; verticalAlignment: Text.AlignVCenter; leftPadding: 12 }
@@ -377,11 +377,11 @@ Rectangle {
                     }
 
                     Column {
-                        width: parent.width; spacing: 5
+                        width: parent.width; spacing: 4
                         Text { text: "ФИО"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: userFullName
-                            width: parent.width; height: 40
+                            width: parent.width; height: 38
                             placeholderText: "Смирнов А.В."
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
@@ -390,11 +390,45 @@ Rectangle {
                     }
 
                     Column {
-                        width: parent.width; spacing: 5
+                        width: parent.width; spacing: 4
+                        Text { text: "Номер телефона"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+
+                        Rectangle {
+                            width: parent.width; height: 38
+                            color: "#111318"; radius: 8
+                            border.color: adminPhoneInput.activeFocus ? "#3b82f6" : "#282d37"
+                            border.width: adminPhoneInput.activeFocus ? 1.5 : 1
+
+                            TextInput {
+                                id: adminPhoneInput
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                verticalAlignment: TextInput.AlignVCenter
+                                color: "#f8fafc"
+                                font.pixelSize: 13
+                                inputMask: "+7 (999) 000-00-00"
+                                selectByMouse: true
+                            }
+
+                            Text {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                verticalAlignment: Text.AlignVCenter
+                                text: "+7 (___) ___-__-__"
+                                color: "#64748b"
+                                font.pixelSize: 13
+                                visible: adminPhoneInput.text.length <= 4
+                            }
+                        }
+                    }
+
+                    Column {
+                        width: parent.width; spacing: 4
                         Text { text: "Логин"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: userLogin
-                            width: parent.width; height: 40
+                            width: parent.width; height: 38
                             placeholderText: "Логин"
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
@@ -403,11 +437,11 @@ Rectangle {
                     }
 
                     Column {
-                        width: parent.width; spacing: 5
+                        width: parent.width; spacing: 4
                         Text { text: "Пароль"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: userPass
-                            width: parent.width; height: 40
+                            width: parent.width; height: 38
                             placeholderText: "Пароль"
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
@@ -416,13 +450,13 @@ Rectangle {
                     }
 
                     Column {
-                        width: parent.width; spacing: 5
+                        width: parent.width; spacing: 4
                         visible: userRoleCombo.currentIndex === 0
                         Text { text: "Группа"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: userGroupCombo
-                            width: parent.width; height: 40
+                            width: parent.width; height: 38
                             model: dbManager.groupsModel
                             textRole: "name"
                             onCountChanged: { if (currentIndex === -1 && count > 0) currentIndex = 0; }
@@ -452,7 +486,7 @@ Rectangle {
                     Rectangle {
                         id: userNotice
                         visible: false
-                        width: parent.width; height: 34; radius: 8
+                        width: parent.width; height: 32; radius: 8
                         property bool ok: true
                         color: ok ? "#1422c55e" : "#14ef4444"
                         border.color: ok ? "#22c55e" : "#ef4444"
@@ -466,7 +500,7 @@ Rectangle {
 
                     Button {
                         id: saveUserBtn
-                        width: parent.width; height: 42
+                        width: parent.width; height: 40
                         hoverEnabled: true
                         text: "Сохранить"
                         background: Rectangle {
@@ -481,8 +515,9 @@ Rectangle {
                             var role = userRoleCombo.currentIndex === 0 ? "student" : "teacher";
                             var gid = (role === "student" && userGroupCombo.count > 0)
                                       ? dbManager.getGroupIdByIndex(userGroupCombo.currentIndex) : -1;
-                            if (dbManager.addUser(userLogin.text, userPass.text, role, userFullName.text, gid)) {
+                            if (dbManager.addUser(userLogin.text, userPass.text, role, userFullName.text, adminPhoneInput.text, gid)) {
                                 userFullName.text = "";
+                                adminPhoneInput.text = "";
                                 userLogin.text = "";
                                 userPass.text = "";
                                 userNotice.ok = true;
@@ -528,7 +563,7 @@ Rectangle {
                             }
 
                             delegate: Rectangle {
-                                width: teachersList.width; height: 40; radius: 7
+                                width: teachersList.width; height: 42; radius: 7
                                 color: "#181b22"; border.color: "#242933"
 
                                 Row {
@@ -537,7 +572,10 @@ Rectangle {
                                     Column {
                                         width: parent.width - 80; anchors.verticalCenter: parent.verticalCenter
                                         Text { text: model.full_name || ""; color: "#f8fafc"; font.pixelSize: 13; font.bold: true; width: parent.width; elide: Text.ElideRight }
-                                        Text { text: model.login || ""; color: "#60a5fa"; font.pixelSize: 11 }
+                                        Text {
+                                            text: (model.login || "") + (model.phone ? (" • " + model.phone) : "")
+                                            color: "#60a5fa"; font.pixelSize: 11; width: parent.width; elide: Text.ElideRight
+                                        }
                                     }
 
                                     Button {
@@ -593,7 +631,10 @@ Rectangle {
                                     Column {
                                         width: parent.width - 155; anchors.verticalCenter: parent.verticalCenter
                                         Text { text: model.full_name || ""; color: "#f8fafc"; font.pixelSize: 13; font.bold: true; width: parent.width; elide: Text.ElideRight }
-                                        Text { text: model.login || ""; color: "#94a3b8"; font.pixelSize: 11 }
+                                        Text {
+                                            text: (model.login || "") + (model.phone ? (" • " + model.phone) : "")
+                                            color: "#94a3b8"; font.pixelSize: 11; width: parent.width; elide: Text.ElideRight
+                                        }
                                     }
 
                                     Rectangle {

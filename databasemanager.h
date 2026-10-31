@@ -29,7 +29,6 @@ public:
 
 class DatabaseManager : public QObject {
     Q_OBJECT
-    // Модели для привязки данных (Data Binding)
     Q_PROPERTY(SqlQueryModel* groupsModel READ groupsModel CONSTANT)
     Q_PROPERTY(SqlQueryModel* teachersModel READ teachersModel CONSTANT)
     Q_PROPERTY(SqlQueryModel* studentsModel READ studentsModel CONSTANT)
@@ -37,7 +36,6 @@ class DatabaseManager : public QObject {
     Q_PROPERTY(SqlQueryModel* journalModel READ journalModel CONSTANT)
     Q_PROPERTY(SqlQueryModel* studentJournalModel READ studentJournalModel CONSTANT)
 
-    // Статистика студента
     Q_PROPERTY(QString studentAvgGrade READ studentAvgGrade NOTIFY statsChanged)
     Q_PROPERTY(QString studentAttendancePercent READ studentAttendancePercent NOTIFY statsChanged)
 
@@ -55,24 +53,20 @@ public:
     QString studentAvgGrade() const { return m_studentAvgGrade; }
     QString studentAttendancePercent() const { return m_studentAttendancePercent; }
 
-    // --- Методы Декана ---
     Q_INVOKABLE bool addGroup(const QString &name);
     Q_INVOKABLE void deleteGroup(int groupId);
-    Q_INVOKABLE bool addUser(const QString &login, const QString &password, const QString &role, const QString &fullName, int groupId);
+    Q_INVOKABLE bool addUser(const QString &login, const QString &password, const QString &role, const QString &fullName, const QString &phone, int groupId);
     Q_INVOKABLE void deleteUser(int userId);
     Q_INVOKABLE bool addSubject(const QString &title, int teacherId);
     Q_INVOKABLE void deleteSubject(int subjectId);
 
-    // --- Методы Преподавателя (Манипулирование данными журнала) ---
     Q_INVOKABLE void loadTeacherData(int teacherId);
     Q_INVOKABLE void addJournalRecord(int studentId, int subjectId, const QString &date, const QString &attendance, const QString &grade);
     Q_INVOKABLE void updateJournalRecord(int recordId, const QString &date, const QString &attendance, const QString &grade);
     Q_INVOKABLE void deleteJournalRecord(int recordId);
 
-    // --- Методы Студента ---
     Q_INVOKABLE void loadStudentData(int studentId);
 
-    // --- Вспомогательные геттеры ID для выпадающих списков (ComboBox) ---
     Q_INVOKABLE int getGroupIdByIndex(int row) const;
     Q_INVOKABLE int getTeacherIdByIndex(int row) const;
     Q_INVOKABLE int getStudentIdByIndex(int row) const;
