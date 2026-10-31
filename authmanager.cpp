@@ -29,14 +29,14 @@ bool AuthManager::login(const QString &username, const QString &password) {
 QString AuthManager::registerAccount(const QString &username, const QString &password,
                                      const QString &role, const QString &fullName, int groupId) {
     if (username.trimmed().isEmpty() || password.trimmed().isEmpty() || fullName.trimmed().isEmpty()) {
-        return "Заполните все обязательные поля!";
+        return "Заполните все поля";
     }
 
     QSqlQuery check;
     check.prepare("SELECT COUNT(*) FROM users WHERE login = :login");
     check.bindValue(":login", username.trimmed());
     if (check.exec() && check.next() && check.value(0).toInt() > 0) {
-        return "Этот логин уже занят!";
+        return "Логин уже занят";
     }
 
     QSqlQuery ins;
@@ -52,7 +52,7 @@ QString AuthManager::registerAccount(const QString &username, const QString &pas
         ins.bindValue(":group_id", QVariant());
 
     if (!ins.exec()) {
-        return "Ошибка сохранения в БД!";
+        return "Ошибка базы данных";
     }
     return "OK";
 }

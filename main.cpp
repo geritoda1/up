@@ -1,14 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QQuickStyle> // <-- 1. ДОБАВИТЬ ЭТОТ INCLUDE
+#include <QQuickStyle>
 #include "databasemanager.h"
 #include "authmanager.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
-    QQuickStyle::setStyle("Basic"); // <-- 2. ОТКЛЮЧАЕТ БЕЛЫЕ ЗАСВЕТКИ WINDOWS
+    QQuickStyle::setStyle("Basic");
 
     DatabaseManager dbManager;
     AuthManager authManager;

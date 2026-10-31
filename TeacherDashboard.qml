@@ -6,7 +6,7 @@ Rectangle {
     color: "#0f1115"
 
     property int selectedRecordId: -1
-    property string boundStudentName: "Кликните по строке в таблице слева"
+    property string boundStudentName: "Не выбрано"
     property string boundDate: Qt.formatDate(new Date(), "yyyy-MM-dd")
     property string boundAttendance: "Присутствовал"
     property string boundGrade: ""
@@ -31,26 +31,15 @@ Rectangle {
         anchors.margins: 20
         spacing: 16
 
-        // ШАПКА
         Rectangle {
             width: parent.width; height: 64
             color: "#181b22"; radius: 14; border.color: "#282d37"
 
-            Row {
+            Column {
                 anchors.left: parent.left; anchors.leftMargin: 18
-                anchors.verticalCenter: parent.verticalCenter; spacing: 14
-
-                Rectangle {
-                    width: 40; height: 40; radius: 10
-                    color: "#1e293b"; border.color: "#3b82f6"
-                    Text { text: "👨‍🏫"; font.pixelSize: 18; anchors.centerIn: parent }
-                }
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter; spacing: 2
-                    Text { text: "Электронный журнал преподавателя"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
-                    Text { text: "Преподаватель: " + authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
-                }
+                anchors.verticalCenter: parent.verticalCenter; spacing: 2
+                Text { text: "Журнал преподавателя"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
+                Text { text: authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
             }
 
             Row {
@@ -58,11 +47,11 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter; spacing: 10
 
                 Rectangle {
-                    height: 34; width: 150; radius: 8
+                    height: 34; width: 130; radius: 8
                     color: "#111318"; border.color: "#242933"
                     Row {
                         anchors.centerIn: parent; spacing: 6
-                        Text { text: "Записей в журнале:"; color: "#94a3b8"; font.pixelSize: 12 }
+                        Text { text: "Записей:"; color: "#94a3b8"; font.pixelSize: 12 }
                         Text { text: journalList.count; color: "#60a5fa"; font.pixelSize: 13; font.bold: true }
                     }
                 }
@@ -72,7 +61,7 @@ Rectangle {
                     color: "#111318"; border.color: "#242933"
                     Row {
                         anchors.centerIn: parent; spacing: 6
-                        Text { text: "Дисциплин:"; color: "#94a3b8"; font.pixelSize: 12 }
+                        Text { text: "Предметов:"; color: "#94a3b8"; font.pixelSize: 12 }
                         Text { text: subjectCombo.count; color: "#a78bfa"; font.pixelSize: 13; font.bold: true }
                     }
                 }
@@ -96,11 +85,9 @@ Rectangle {
             }
         }
 
-        // РАБОЧАЯ ОБЛАСТЬ
         Row {
             width: parent.width; height: parent.height - 80; spacing: 16
 
-            // ЛЕВАЯ ЧАСТЬ: ТАБЛИЦА ЖУРНАЛА
             Rectangle {
                 width: (parent.width - 16) * 0.65
                 height: parent.height
@@ -109,11 +96,7 @@ Rectangle {
                 Column {
                     anchors.fill: parent; anchors.margins: 16; spacing: 12
 
-                    Row {
-                        width: parent.width; spacing: 10
-                        Text { text: "Журнал посещаемости и успеваемости"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true; anchors.verticalCenter: parent.verticalCenter }
-                        Text { text: "• нажмите на строку для привязки данных"; color: "#64748b"; font.pixelSize: 12; anchors.verticalCenter: parent.verticalCenter }
-                    }
+                    Text { text: "Учет посещаемости и оценок"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Rectangle {
                         width: parent.width; height: 38
@@ -143,7 +126,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: journalList.count === 0
-                                text: "В журнале пока нет записей.\nВыберите студента и предмет справа и нажмите «Добавить запись»."
+                                text: "Записей пока нет"
                                 color: "#64748b"; font.pixelSize: 13; horizontalAlignment: Text.AlignHCenter
                             }
 
@@ -239,7 +222,6 @@ Rectangle {
                 }
             }
 
-            // ПРАВАЯ ЧАСТЬ: ПАНЕЛЬ КОНТРОЛЯ
             Rectangle {
                 width: (parent.width - 16) * 0.35
                 height: parent.height
@@ -248,11 +230,11 @@ Rectangle {
                 Column {
                     anchors.fill: parent; anchors.margins: 16; spacing: 10
 
-                    Text { text: "Элементы контроля и манипулирования"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
+                    Text { text: "Параметры записи"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Column {
                         width: parent.width; spacing: 4
-                        Text { text: "Студент (ComboBox → studentsModel)"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Студент"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: studentCombo
@@ -262,7 +244,7 @@ Rectangle {
                             onCountChanged: { if (currentIndex === -1 && count > 0) currentIndex = 0; }
                             background: Rectangle { color: "#111318"; radius: 8; border.color: studentCombo.popup.visible ? "#3b82f6" : "#282d37" }
                             contentItem: Text {
-                                text: studentCombo.count > 0 ? studentCombo.currentText : "Нет студентов в БД"
+                                text: studentCombo.count > 0 ? studentCombo.currentText : "Нет студентов"
                                 color: studentCombo.count > 0 ? "#f8fafc" : "#64748b"
                                 font.pixelSize: 13; verticalAlignment: Text.AlignVCenter; leftPadding: 12; elide: Text.ElideRight
                             }
@@ -285,7 +267,7 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 4
-                        Text { text: "Дисциплина (ComboBox → subjectsModel)"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Дисциплина"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: subjectCombo
@@ -295,7 +277,7 @@ Rectangle {
                             onCountChanged: { if (currentIndex === -1 && count > 0) currentIndex = 0; }
                             background: Rectangle { color: "#111318"; radius: 8; border.color: subjectCombo.popup.visible ? "#3b82f6" : "#282d37" }
                             contentItem: Text {
-                                text: subjectCombo.count > 0 ? subjectCombo.currentText : "Нет дисциплин в БД"
+                                text: subjectCombo.count > 0 ? subjectCombo.currentText : "Нет дисциплин"
                                 color: subjectCombo.count > 0 ? "#f8fafc" : "#64748b"
                                 font.pixelSize: 13; verticalAlignment: Text.AlignVCenter; leftPadding: 12; elide: Text.ElideRight
                             }
@@ -320,7 +302,7 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 4
-                        Text { text: "Выбранная запись (Привязка TextField)"; color: selectedRecordId > 0 ? "#60a5fa" : "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Выбранная запись"; color: selectedRecordId > 0 ? "#60a5fa" : "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: selectedStudentText
                             width: parent.width; height: 36; readOnly: true
@@ -336,7 +318,7 @@ Rectangle {
 
                         Column {
                             width: (parent.width - 10) * 0.48; spacing: 4
-                            Text { text: "Дата (TextField)"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                            Text { text: "Дата"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                             TextField {
                                 id: dateField
                                 width: parent.width; height: 38
@@ -376,7 +358,7 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 4
-                        Text { text: "Оценка за занятие (Привязка TextField)"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Оценка"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         Row {
                             width: parent.width; spacing: 6
@@ -384,7 +366,7 @@ Rectangle {
                             TextField {
                                 id: gradeField
                                 width: parent.width - 194; height: 38
-                                text: boundGrade; placeholderText: "2..5 или пусто"
+                                text: boundGrade; placeholderText: "Без оценки"
                                 color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                                 leftPadding: 12; rightPadding: 12; selectByMouse: true
                                 background: Rectangle { color: "#111318"; radius: 8; border.color: gradeField.activeFocus ? "#3b82f6" : "#282d37" }
@@ -419,7 +401,7 @@ Rectangle {
                         id: insertBtn
                         width: parent.width; height: 40
                         hoverEnabled: true
-                        text: "➕ Добавить новую запись (INSERT)"
+                        text: "Добавить запись"
                         enabled: studentCombo.count > 0 && subjectCombo.count > 0
                         background: Rectangle {
                             radius: 8
@@ -441,7 +423,7 @@ Rectangle {
                         id: updateBtn
                         width: parent.width; height: 40
                         hoverEnabled: true
-                        text: "✏️ Изменить выбранную запись (UPDATE)"
+                        text: "Сохранить изменения"
                         enabled: selectedRecordId > 0
                         background: Rectangle {
                             radius: 8
@@ -461,7 +443,7 @@ Rectangle {
                         id: deleteBtn
                         width: parent.width; height: 38
                         hoverEnabled: true
-                        text: "🗑️ Удалить выбранную запись (DELETE)"
+                        text: "Удалить запись"
                         enabled: selectedRecordId > 0
                         background: Rectangle {
                             radius: 8
@@ -476,7 +458,7 @@ Rectangle {
                         onClicked: {
                             dbManager.deleteJournalRecord(selectedRecordId);
                             selectedRecordId = -1;
-                            boundStudentName = "Кликните по строке в таблице слева";
+                            boundStudentName = "Не выбрано";
                             gradeField.text = "";
                         }
                     }

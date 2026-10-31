@@ -6,7 +6,7 @@ Rectangle {
     color: "#0f1115"
 
     property int selectedId: -1
-    property string selSubject: "Выберите запись в таблице"
+    property string selSubject: "Не выбрано"
     property string selTeacher: "—"
     property string selDate: "—"
     property string selAttendance: "—"
@@ -33,30 +33,19 @@ Rectangle {
         anchors.margins: 20
         spacing: 16
 
-        // ШАПКА
         Rectangle {
             width: parent.width; height: 64
             color: "#181b22"; radius: 14; border.color: "#282d37"
 
-            Row {
+            Column {
                 anchors.left: parent.left; anchors.leftMargin: 18
-                anchors.verticalCenter: parent.verticalCenter; spacing: 14
-
-                Rectangle {
-                    width: 40; height: 40; radius: 10
-                    color: "#1e293b"; border.color: "#3b82f6"
-                    Text { text: "🎓"; font.pixelSize: 18; anchors.centerIn: parent }
-                }
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter; spacing: 2
-                    Text { text: "Личный кабинет студента"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
-                    Row {
-                        spacing: 8
-                        Text { text: authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
-                        Text { text: "•"; color: "#475569"; font.pixelSize: 12 }
-                        Text { text: "Группа: " + authManager.groupName; color: "#38bdf8"; font.pixelSize: 12; font.bold: true }
-                    }
+                anchors.verticalCenter: parent.verticalCenter; spacing: 2
+                Text { text: "Личный кабинет студента"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
+                Row {
+                    spacing: 8
+                    Text { text: authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
+                    Text { text: "•"; color: "#475569"; font.pixelSize: 12 }
+                    Text { text: "Группа: " + authManager.groupName; color: "#38bdf8"; font.pixelSize: 12; font.bold: true }
                 }
             }
 
@@ -100,66 +89,43 @@ Rectangle {
             }
         }
 
-        // КАРТОЧКИ СТАТИСТИКИ
         Row {
             width: parent.width; height: 82; spacing: 16
 
             Rectangle {
                 width: (parent.width - 32) / 3; height: parent.height
                 color: "#181b22"; radius: 14; border.color: "#282d37"
-                Row {
-                    anchors.fill: parent; anchors.margins: 16; spacing: 14
-                    Rectangle {
-                        width: 48; height: 48; radius: 12; anchors.verticalCenter: parent.verticalCenter
-                        color: "#1422c55e"; border.color: "#22c55e"
-                        Text { text: "⭐"; font.pixelSize: 20; anchors.centerIn: parent }
-                    }
-                    Column {
-                        anchors.verticalCenter: parent.verticalCenter; spacing: 3
-                        Text { text: "Средний балл успеваемости"; color: "#94a3b8"; font.pixelSize: 12 }
-                        Text { text: dbManager.studentAvgGrade; color: "#4ade80"; font.pixelSize: 20; font.bold: true }
-                    }
+                Column {
+                    anchors.left: parent.left; anchors.leftMargin: 18
+                    anchors.verticalCenter: parent.verticalCenter; spacing: 4
+                    Text { text: "Средний балл"; color: "#94a3b8"; font.pixelSize: 12 }
+                    Text { text: dbManager.studentAvgGrade; color: "#4ade80"; font.pixelSize: 22; font.bold: true }
                 }
             }
 
             Rectangle {
                 width: (parent.width - 32) / 3; height: parent.height
                 color: "#181b22"; radius: 14; border.color: "#282d37"
-                Row {
-                    anchors.fill: parent; anchors.margins: 16; spacing: 14
-                    Rectangle {
-                        width: 48; height: 48; radius: 12; anchors.verticalCenter: parent.verticalCenter
-                        color: "#143b82f6"; border.color: "#3b82f6"
-                        Text { text: "📅"; font.pixelSize: 20; anchors.centerIn: parent }
-                    }
-                    Column {
-                        anchors.verticalCenter: parent.verticalCenter; spacing: 3
-                        Text { text: "Посещаемость занятий"; color: "#94a3b8"; font.pixelSize: 12 }
-                        Text { text: dbManager.studentAttendancePercent; color: "#60a5fa"; font.pixelSize: 18; font.bold: true }
-                    }
+                Column {
+                    anchors.left: parent.left; anchors.leftMargin: 18
+                    anchors.verticalCenter: parent.verticalCenter; spacing: 4
+                    Text { text: "Посещаемость"; color: "#94a3b8"; font.pixelSize: 12 }
+                    Text { text: dbManager.studentAttendancePercent; color: "#60a5fa"; font.pixelSize: 22; font.bold: true }
                 }
             }
 
             Rectangle {
                 width: (parent.width - 32) / 3; height: parent.height
                 color: "#181b22"; radius: 14; border.color: "#282d37"
-                Row {
-                    anchors.fill: parent; anchors.margins: 16; spacing: 14
-                    Rectangle {
-                        width: 48; height: 48; radius: 12; anchors.verticalCenter: parent.verticalCenter
-                        color: "#14a855f7"; border.color: "#a855f7"
-                        Text { text: "📚"; font.pixelSize: 20; anchors.centerIn: parent }
-                    }
-                    Column {
-                        anchors.verticalCenter: parent.verticalCenter; spacing: 3
-                        Text { text: "Всего записей в журнале"; color: "#94a3b8"; font.pixelSize: 12 }
-                        Text { text: studentList.count + " зан."; color: "#c084fc"; font.pixelSize: 20; font.bold: true }
-                    }
+                Column {
+                    anchors.left: parent.left; anchors.leftMargin: 18
+                    anchors.verticalCenter: parent.verticalCenter; spacing: 4
+                    Text { text: "Всего занятий"; color: "#94a3b8"; font.pixelSize: 12 }
+                    Text { text: studentList.count; color: "#c084fc"; font.pixelSize: 22; font.bold: true }
                 }
             }
         }
 
-        // ОСНОВНАЯ ОБЛАСТЬ
         Row {
             width: parent.width; height: parent.height - 178; spacing: 16
 
@@ -174,7 +140,7 @@ Rectangle {
                         width: parent.width; height: 32; spacing: 8
 
                         Text {
-                            text: "Ведомость посещаемости и оценок"
+                            text: "Дневник"
                             color: "#f8fafc"; font.pixelSize: 15; font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                         }
@@ -219,7 +185,7 @@ Rectangle {
                             anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                             Text { text: "Дисциплина"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.30; anchors.verticalCenter: parent.verticalCenter }
                             Text { text: "Преподаватель"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.26; anchors.verticalCenter: parent.verticalCenter }
-                            Text { text: "Дата занятия"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.15; anchors.verticalCenter: parent.verticalCenter }
+                            Text { text: "Дата"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.15; anchors.verticalCenter: parent.verticalCenter }
                             Text { text: "Статус"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.16; anchors.verticalCenter: parent.verticalCenter }
                             Text { text: "Оценка"; color: "#94a3b8"; font.pixelSize: 12; font.bold: true; width: parent.width * 0.08; horizontalAlignment: Text.AlignHCenter; anchors.verticalCenter: parent.verticalCenter }
                         }
@@ -238,7 +204,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: studentList.count === 0
-                                text: "У вас пока нет выставленных оценок или отметок о посещаемости."
+                                text: "Записей пока нет"
                                 color: "#64748b"; font.pixelSize: 13; horizontalAlignment: Text.AlignHCenter
                             }
 
@@ -311,7 +277,6 @@ Rectangle {
                 }
             }
 
-            // ПРАВАЯ ЧАСТЬ: КАРТОЧКА ВЫБРАННОГО ЗАНЯТИЯ
             Rectangle {
                 width: (parent.width - 16) * 0.30; height: parent.height
                 color: "#181b22"; radius: 14; border.color: "#282d37"
@@ -319,11 +284,7 @@ Rectangle {
                 Column {
                     anchors.fill: parent; anchors.margins: 16; spacing: 12
 
-                    Text { text: "Информация о занятии"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
-                    Text {
-                        text: "Привязка элементов контроля к выбранной записи ведомости студента"
-                        color: "#94a3b8"; font.pixelSize: 12; width: parent.width; wrapMode: Text.WordWrap
-                    }
+                    Text { text: "Детали занятия"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Rectangle { width: parent.width; height: 1; color: "#262b36" }
 
@@ -349,7 +310,7 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 4
-                        Text { text: "Дата проведения"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Дата"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             width: parent.width; height: 38; readOnly: true; text: root.selDate
                             color: "#60a5fa"; font.pixelSize: 13; font.bold: true; leftPadding: 12; rightPadding: 12

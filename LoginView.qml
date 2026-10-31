@@ -6,7 +6,6 @@ Rectangle {
     color: "#0f1115"
     property bool isRegisterMode: false
 
-    // Фоновое декоративное свечение
     Rectangle {
         width: 480
         height: 480
@@ -27,7 +26,6 @@ Rectangle {
         anchors.verticalCenterOffset: 90
     }
 
-    // Центральная карточка авторизации
     Rectangle {
         id: card
         width: 400
@@ -48,23 +46,6 @@ Rectangle {
             anchors.centerIn: parent
             spacing: 14
 
-            // Иконка-бейдж и заголовок
-            Rectangle {
-                width: 48
-                height: 48
-                radius: 12
-                color: "#1e293b"
-                border.color: "#3b82f6"
-                border.width: 1
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Text {
-                    text: "🎓"
-                    font.pixelSize: 22
-                    anchors.centerIn: parent
-                }
-            }
-
             Column {
                 width: parent.width
                 spacing: 4
@@ -78,14 +59,13 @@ Rectangle {
                 }
 
                 Text {
-                    text: isRegisterMode ? "Создание нового профиля в системе" : "Войдите в свой личный кабинет"
+                    text: isRegisterMode ? "Регистрация нового пользователя" : "Вход в систему"
                     color: "#94a3b8"
                     font.pixelSize: 13
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
 
-            // Переключатель режимов (Табы: Вход | Регистрация)
             Rectangle {
                 width: parent.width
                 height: 40
@@ -147,14 +127,13 @@ Rectangle {
                 }
             }
 
-            // Поле ФИО (только в режиме регистрации)
             Column {
                 width: parent.width
                 spacing: 5
                 visible: isRegisterMode
 
                 Text {
-                    text: "ФИО полностью"
+                    text: "ФИО"
                     color: "#cbd5e1"
                     font.pixelSize: 12
                     font.bold: true
@@ -180,7 +159,6 @@ Rectangle {
                 }
             }
 
-            // Поле Логина
             Column {
                 width: parent.width
                 spacing: 5
@@ -213,7 +191,6 @@ Rectangle {
                 }
             }
 
-            // Поле Пароля
             Column {
                 width: parent.width
                 spacing: 5
@@ -247,14 +224,13 @@ Rectangle {
                 }
             }
 
-            // Выбор роли (только при регистрации)
             Column {
                 width: parent.width
                 spacing: 5
                 visible: isRegisterMode
 
                 Text {
-                    text: "Роль в учебном процессе"
+                    text: "Роль"
                     color: "#cbd5e1"
                     font.pixelSize: 12
                     font.bold: true
@@ -289,6 +265,7 @@ Rectangle {
                     }
 
                     delegate: ItemDelegate {
+                        id: roleItemDel
                         width: roleCombo.width - 8
                         height: 36
                         highlighted: roleCombo.highlightedIndex === index
@@ -303,7 +280,7 @@ Rectangle {
 
                         background: Rectangle {
                             radius: 6
-                            color: parent.highlighted ? "#2563eb" : "transparent"
+                            color: roleItemDel.highlighted ? "#2563eb" : "transparent"
                         }
                     }
 
@@ -327,14 +304,13 @@ Rectangle {
                 }
             }
 
-            // Выбор группы (привязка к БД, только для студента при регистрации)
             Column {
                 width: parent.width
                 spacing: 5
                 visible: isRegisterMode && roleCombo.currentIndex === 0
 
                 Text {
-                    text: "Учебная группа"
+                    text: "Группа"
                     color: "#cbd5e1"
                     font.pixelSize: 12
                     font.bold: true
@@ -359,7 +335,7 @@ Rectangle {
                     }
 
                     contentItem: Text {
-                        text: regGroupCombo.count > 0 ? regGroupCombo.currentText : "Нет созданных групп (создает декан)"
+                        text: regGroupCombo.count > 0 ? regGroupCombo.currentText : "Нет доступных групп"
                         color: regGroupCombo.count > 0 ? "#f8fafc" : "#64748b"
                         font.pixelSize: 14
                         verticalAlignment: Text.AlignVCenter
@@ -375,6 +351,7 @@ Rectangle {
                     }
 
                     delegate: ItemDelegate {
+                        id: regGroupDel
                         width: regGroupCombo.width - 8
                         height: 36
                         highlighted: regGroupCombo.highlightedIndex === index
@@ -389,7 +366,7 @@ Rectangle {
 
                         background: Rectangle {
                             radius: 6
-                            color: parent.highlighted ? "#2563eb" : "transparent"
+                            color: regGroupDel.highlighted ? "#2563eb" : "transparent"
                         }
                     }
 
@@ -414,7 +391,6 @@ Rectangle {
                 }
             }
 
-            // Плашка уведомления (ошибка или успех)
             Rectangle {
                 id: statusBanner
                 visible: false
@@ -434,12 +410,12 @@ Rectangle {
                 }
             }
 
-            // Кнопка отправки
             Button {
                 id: submitBtn
                 width: parent.width
                 height: 44
-                text: isRegisterMode ? "Создать аккаунт" : "Войти в систему"
+                hoverEnabled: true
+                text: isRegisterMode ? "Зарегистрироваться" : "Войти"
 
                 background: Rectangle {
                     radius: 8
@@ -456,43 +432,6 @@ Rectangle {
                 }
 
                 onClicked: submitAction()
-            }
-
-            // Плашка с быстрым входом декана
-            Rectangle {
-                visible: !isRegisterMode
-                width: parent.width
-                height: 34
-                radius: 8
-                color: "#111318"
-                border.color: "#222630"
-
-                Row {
-                    anchors.centerIn: parent
-                    spacing: 6
-
-                    Text {
-                        text: "Доступ деканата:"
-                        color: "#64748b"
-                        font.pixelSize: 12
-                    }
-
-                    Text {
-                        text: "dean / 123"
-                        color: "#60a5fa"
-                        font.pixelSize: 12
-                        font.bold: true
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                loginField.text = "dean";
-                                passField.text = "123";
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -516,7 +455,7 @@ Rectangle {
                 fullNameField.text = "";
                 passField.text = "";
                 statusBanner.isSuccess = true;
-                statusText.text = "Аккаунт создан! Теперь войдите.";
+                statusText.text = "Аккаунт создан";
                 statusBanner.visible = true;
             } else {
                 statusBanner.isSuccess = false;

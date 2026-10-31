@@ -25,7 +25,6 @@ Rectangle {
         anchors.margins: 20
         spacing: 16
 
-        // ШАПКА
         Rectangle {
             width: parent.width
             height: 64
@@ -33,25 +32,14 @@ Rectangle {
             radius: 14
             border.color: "#282d37"
 
-            Row {
+            Column {
                 anchors.left: parent.left
                 anchors.leftMargin: 18
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 14
+                spacing: 2
 
-                Rectangle {
-                    width: 40; height: 40; radius: 10
-                    color: "#1e293b"
-                    border.color: "#3b82f6"
-                    Text { text: "🏛️"; font.pixelSize: 18; anchors.centerIn: parent }
-                }
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    Text { text: "Панель управления деканата"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
-                    Text { text: "Администратор: " + authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
-                }
+                Text { text: "Панель деканата"; color: "#f8fafc"; font.pixelSize: 17; font.bold: true }
+                Text { text: authManager.fullName; color: "#94a3b8"; font.pixelSize: 12 }
             }
 
             Row {
@@ -110,13 +98,11 @@ Rectangle {
             }
         }
 
-        // РАБОЧАЯ ОБЛАСТЬ В 3 КОЛОНКИ
         Row {
             width: parent.width
             height: parent.height - 80
             spacing: 16
 
-            // КОЛОНКА 1: ГРУППЫ И ДИСЦИПЛИНЫ
             Rectangle {
                 width: (parent.width - 32) * 0.31
                 height: parent.height
@@ -133,7 +119,7 @@ Rectangle {
                         TextField {
                             id: groupInput
                             width: parent.width - 104; height: 38
-                            placeholderText: "Например: ИСП-21"
+                            placeholderText: "Название группы"
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
                             Keys.onReturnPressed: createGroupBtn.clicked()
@@ -147,7 +133,7 @@ Rectangle {
                             id: createGroupBtn
                             width: 96; height: 38
                             hoverEnabled: true
-                            text: "+ Группа"
+                            text: "Добавить"
                             background: Rectangle {
                                 radius: 8
                                 color: createGroupBtn.down ? "#1d4ed8" : (createGroupBtn.hovered ? "#3b82f6" : "#2563eb")
@@ -178,7 +164,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: groupsList.count === 0
-                                text: "Группы еще не созданы"
+                                text: "Список пуст"
                                 color: "#64748b"; font.pixelSize: 12
                             }
 
@@ -219,12 +205,12 @@ Rectangle {
 
                     Rectangle { width: parent.width; height: 1; color: "#262b36" }
 
-                    Text { text: "Дисциплины и нагрузка"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
+                    Text { text: "Дисциплины"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     TextField {
                         id: subjectInput
                         width: parent.width; height: 38
-                        placeholderText: "Название предмета (напр. Базы данных)"
+                        placeholderText: "Название предмета"
                         color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                         leftPadding: 12; rightPadding: 12; selectByMouse: true
                         background: Rectangle {
@@ -245,7 +231,7 @@ Rectangle {
                             border.color: teacherCombo.popup.visible ? "#3b82f6" : "#282d37"
                         }
                         contentItem: Text {
-                            text: teacherCombo.count > 0 ? ("Преподаватель: " + teacherCombo.currentText) : "Сначала добавьте преподавателя →"
+                            text: teacherCombo.count > 0 ? ("Преподаватель: " + teacherCombo.currentText) : "Нет преподавателей"
                             color: teacherCombo.count > 0 ? "#f8fafc" : "#64748b"
                             font.pixelSize: 13; verticalAlignment: Text.AlignVCenter; leftPadding: 12; elide: Text.ElideRight
                         }
@@ -310,7 +296,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: subjectsList.count === 0
-                                text: "Дисциплины не добавлены"
+                                text: "Список пуст"
                                 color: "#64748b"; font.pixelSize: 12
                             }
 
@@ -324,7 +310,7 @@ Rectangle {
                                     Column {
                                         width: parent.width - 78; anchors.verticalCenter: parent.verticalCenter; spacing: 1
                                         Text { text: model.title || ""; color: "#f8fafc"; font.pixelSize: 13; font.bold: true; width: parent.width; elide: Text.ElideRight }
-                                        Text { text: "Ведет: " + (model.teacher_name || "Не назначен"); color: "#94a3b8"; font.pixelSize: 11; width: parent.width; elide: Text.ElideRight }
+                                        Text { text: model.teacher_name || "Не назначен"; color: "#94a3b8"; font.pixelSize: 11; width: parent.width; elide: Text.ElideRight }
                                     }
 
                                     Button {
@@ -350,7 +336,6 @@ Rectangle {
                 }
             }
 
-            // КОЛОНКА 2: СОЗДАНИЕ АККАУНТА
             Rectangle {
                 width: (parent.width - 32) * 0.28
                 height: parent.height
@@ -359,15 +344,11 @@ Rectangle {
                 Column {
                     anchors.fill: parent; anchors.margins: 16; spacing: 12
 
-                    Text { text: "Регистрация пользователя"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
-                    Text {
-                        text: "Добавление аккаунта студента или преподавателя напрямую в базу данных"
-                        color: "#94a3b8"; font.pixelSize: 12; width: parent.width; wrapMode: Text.WordWrap
-                    }
+                    Text { text: "Новый пользователь"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Column {
                         width: parent.width; spacing: 5
-                        Text { text: "Роль пользователя"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Роль"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: userRoleCombo
@@ -393,11 +374,11 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 5
-                        Text { text: "ФИО полностью"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "ФИО"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: userFullName
                             width: parent.width; height: 40
-                            placeholderText: "Например: Смирнов А.В."
+                            placeholderText: "Смирнов А.В."
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
                             background: Rectangle { color: "#111318"; radius: 8; border.color: userFullName.activeFocus ? "#3b82f6" : "#282d37" }
@@ -406,11 +387,11 @@ Rectangle {
 
                     Column {
                         width: parent.width; spacing: 5
-                        Text { text: "Логин для входа"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Логин"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
                         TextField {
                             id: userLogin
                             width: parent.width; height: 40
-                            placeholderText: "Уникальный логин"
+                            placeholderText: "Логин"
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
                             background: Rectangle { color: "#111318"; radius: 8; border.color: userLogin.activeFocus ? "#3b82f6" : "#282d37" }
@@ -423,7 +404,7 @@ Rectangle {
                         TextField {
                             id: userPass
                             width: parent.width; height: 40
-                            placeholderText: "Пароль от аккаунта"
+                            placeholderText: "Пароль"
                             color: "#f8fafc"; placeholderTextColor: "#64748b"; font.pixelSize: 13
                             leftPadding: 12; rightPadding: 12; selectByMouse: true
                             background: Rectangle { color: "#111318"; radius: 8; border.color: userPass.activeFocus ? "#3b82f6" : "#282d37" }
@@ -433,7 +414,7 @@ Rectangle {
                     Column {
                         width: parent.width; spacing: 5
                         visible: userRoleCombo.currentIndex === 0
-                        Text { text: "Учебная группа студента"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
+                        Text { text: "Группа"; color: "#cbd5e1"; font.pixelSize: 12; font.bold: true }
 
                         ComboBox {
                             id: userGroupCombo
@@ -443,7 +424,7 @@ Rectangle {
                             onCountChanged: { if (currentIndex === -1 && count > 0) currentIndex = 0; }
                             background: Rectangle { color: "#111318"; radius: 8; border.color: userGroupCombo.popup.visible ? "#3b82f6" : "#282d37" }
                             contentItem: Text {
-                                text: userGroupCombo.count > 0 ? userGroupCombo.currentText : "Групп пока нет (создайте слева)"
+                                text: userGroupCombo.count > 0 ? userGroupCombo.currentText : "Нет групп"
                                 color: userGroupCombo.count > 0 ? "#f8fafc" : "#64748b"
                                 font.pixelSize: 13; verticalAlignment: Text.AlignVCenter; leftPadding: 12
                             }
@@ -483,7 +464,7 @@ Rectangle {
                         id: saveUserBtn
                         width: parent.width; height: 42
                         hoverEnabled: true
-                        text: "Сохранить пользователя"
+                        text: "Сохранить"
                         background: Rectangle {
                             radius: 8
                             color: saveUserBtn.down ? "#15803d" : (saveUserBtn.hovered ? "#22c55e" : "#16a34a")
@@ -501,11 +482,11 @@ Rectangle {
                                 userLogin.text = "";
                                 userPass.text = "";
                                 userNotice.ok = true;
-                                userNoticeText.text = "Аккаунт успешно добавлен!";
+                                userNoticeText.text = "Пользователь добавлен";
                                 userNotice.visible = true;
                             } else {
                                 userNotice.ok = false;
-                                userNoticeText.text = "Заполните поля (логин уникален)";
+                                userNoticeText.text = "Ошибка добавления";
                                 userNotice.visible = true;
                             }
                         }
@@ -513,7 +494,6 @@ Rectangle {
                 }
             }
 
-            // КОЛОНКА 3: СПИСКИ ПРЕПОДАВАТЕЛЕЙ И СТУДЕНТОВ
             Rectangle {
                 width: (parent.width - 32) * 0.41
                 height: parent.height
@@ -522,7 +502,7 @@ Rectangle {
                 Column {
                     anchors.fill: parent; anchors.margins: 16; spacing: 10
 
-                    Text { text: "Преподавательский состав"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
+                    Text { text: "Преподаватели"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Rectangle {
                         width: parent.width; height: parent.height * 0.34
@@ -537,7 +517,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: teachersList.count === 0
-                                text: "Список преподавателей пуст"
+                                text: "Список пуст"
                                 color: "#64748b"; font.pixelSize: 12
                             }
 
@@ -551,7 +531,7 @@ Rectangle {
                                     Column {
                                         width: parent.width - 80; anchors.verticalCenter: parent.verticalCenter
                                         Text { text: model.full_name || ""; color: "#f8fafc"; font.pixelSize: 13; font.bold: true; width: parent.width; elide: Text.ElideRight }
-                                        Text { text: "Логин: " + (model.login || ""); color: "#60a5fa"; font.pixelSize: 11 }
+                                        Text { text: model.login || ""; color: "#60a5fa"; font.pixelSize: 11 }
                                     }
 
                                     Button {
@@ -577,7 +557,7 @@ Rectangle {
 
                     Rectangle { width: parent.width; height: 1; color: "#262b36" }
 
-                    Text { text: "Контингент студентов"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
+                    Text { text: "Студенты"; color: "#f8fafc"; font.pixelSize: 15; font.bold: true }
 
                     Rectangle {
                         width: parent.width
@@ -593,7 +573,7 @@ Rectangle {
                             Text {
                                 anchors.centerIn: parent
                                 visible: studentsList.count === 0
-                                text: "Список студентов пуст"
+                                text: "Список пуст"
                                 color: "#64748b"; font.pixelSize: 12
                             }
 
@@ -607,7 +587,7 @@ Rectangle {
                                     Column {
                                         width: parent.width - 155; anchors.verticalCenter: parent.verticalCenter
                                         Text { text: model.full_name || ""; color: "#f8fafc"; font.pixelSize: 13; font.bold: true; width: parent.width; elide: Text.ElideRight }
-                                        Text { text: "Логин: " + (model.login || ""); color: "#94a3b8"; font.pixelSize: 11 }
+                                        Text { text: model.login || ""; color: "#94a3b8"; font.pixelSize: 11 }
                                     }
 
                                     Rectangle {

@@ -9,8 +9,8 @@ Window {
     minimumWidth: 960
     minimumHeight: 600
     visible: true
-    title: "Система учета посещаемости и успеваемости студентов"
-    color: "#121212"
+    title: "Учет посещаемости и успеваемости"
+    color: "#0f1115"
 
     Connections {
         target: authManager
